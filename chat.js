@@ -123,8 +123,8 @@ window.addEventListener('resize', adjustForSmallScreens);
 adjustForSmallScreens();
 
 const scriptTag = document.currentScript
-const urlBase = "https://arm.chatshape.com/"
-const headers = { 'Content-Type': 'application/json' }
+// // const urlBase = "https://arm.chatshape.com/"
+// const headers = { 'Content-Type': 'application/json' }
 console.log(scriptTag);
 let botName = scriptTag.id.substring(0, scriptTag.id.indexOf("-")).trim();
 let botID = scriptTag.id.replace(/.*?-/, "").trim();
@@ -141,15 +141,16 @@ function init() {
 
     document.body.appendChild(chat)
     const getColor = async () => {
-        const response = await fetch(urlBase + "getInit", {
-            headers: headers,
-            method: "POST",
-            body: JSON.stringify({ "name": botName, "uuid": botID }),
-        });
-        const string = await response.json();
-        const arr = string === "" ? [] : string;
-        chatButton.style.backgroundColor = arr[2]
-        const isLeftSide = (arr[3]);
+        // const response = await fetch(urlBase + "getInit", {
+        //     headers: headers,
+        //     method: "POST",
+        //     body: JSON.stringify({ "name": botName, "uuid": botID }),
+        // });
+        // const string = await response.json();
+        // const arr = string === "" ? [] : string;
+        // chatButton.style.backgroundColor = arr[2]
+        // const isLeftSide = (arr[3]);
+        const isLeftSide = false;
         if (isLeftSide) {
             chatButton.style.left = '20px';
             chatButton.style.right = 'unset'
