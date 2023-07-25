@@ -148,9 +148,9 @@
             // });
             // let string = await response.json();
             // let arr = string === "" ? [] : string;
-            // chatButton.style.backgroundColor = arr[2]
             // let isLeftSide = (arr[3]);
             */
+            chatButton.style.backgroundColor = 'white';
             const isLeftSide = false;
             if (isLeftSide) {
                 chatButton.style.left = '20px';
