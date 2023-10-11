@@ -132,7 +132,7 @@
     function init() {
 
         chat.innerHTML = `<iframe
-    src="https://hypewize.com/chatbot/${scriptTag.id}"
+    src="https://app.hypewize.com/projects/chatbot/${scriptTag.id}"
     width="100%"
     height="100%"
     frameborder="0"
