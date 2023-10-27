@@ -37,7 +37,6 @@
         const doc = parser.parseFromString(chatButtonClose, 'text/html');
         const svgElement = doc.body.firstChild;
         svgElement.setAttribute('fill', newColor);
-        chatButtonClose = svgElement.outerHTML;
     }
 
 
@@ -233,12 +232,10 @@
                 // document.body.style.backgroundColor = themeColor;
                 // chatButton.style.backgroundColor = themeColor;
                 // chatButtonIcon.style.backgroundColor = themeColor;
-
-
-
                 updateChatButtonOpenColor(themeColor);
                 updateChatButtonCloseColor(themeColor);
-
+                chatButton.style.backgroundColor = themeColor;
+                
                 const isLeftSide = false;
                 if (isLeftSide) {
                     chatButton.style.left = '20px';
