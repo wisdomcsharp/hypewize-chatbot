@@ -11,14 +11,42 @@
     let chatButtonClose = `
 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="#FFFFFF" width="24" height="24">
   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-</svg>
-`
+</svg>`
+
+
+    function updateChatButtonOpenColor(newColor) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(chatButtonLogo, 'text/html');
+        const svgElement = doc.body.firstChild;
+        const circleElement = svgElement.querySelector('circle');
+        if (circleElement) {
+            circleElement.setAttribute('fill', newColor);
+            chatButtonLogo = svgElement.outerHTML;
+        } else {
+            console.error('Circle element not found');
+        }
+
+
+        //update active button too
+        const chatButtonLogoElement = chatButtonIcon.querySelector('svg');
+        const pathElement = chatButtonLogoElement.querySelector('circle');
+        pathElement.setAttribute('fill', newColor);
+    }
+    function updateChatButtonCloseColor(newColor) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(chatButtonClose, 'text/html');
+        const svgElement = doc.body.firstChild;
+        svgElement.setAttribute('fill', newColor);
+        chatButtonClose = svgElement.outerHTML;
+    }
+
+
     // creat the chat button element
     let chatButton = document.createElement('div')
     // apply styles to the chat button
     chatButton.setAttribute('id', 'chat-bubble-button')
     chatButton.style.position = 'fixed'
-    chatButton.style.bottom = '20px'
+    chatButton.style.bottom = '15px'
     chatButton.style.width = SIZE + 'px'
     chatButton.style.height = SIZE + 'px'
     chatButton.style.borderRadius = BTN_RAD + 'px'
@@ -78,8 +106,9 @@
 
     // This function checks if the device is mobile
     function isMobileDevice() {
+        console.log('window.innerWidth: ', window.innerWidth)
         const widthThreshold = 500; // Maximum width for small devices
-        const viewportWidth = window.innerWidth;
+        const viewportWidth = window.outerWidth//window.innerWidth;
         return viewportWidth <= widthThreshold;
     }
 
@@ -186,7 +215,7 @@
         let getColor = async () => {
             try {
                 // Make a GET request to the specified URL
-                let response = await fetch(`https://api.hypewize.com/projects/${scriptTag.id}`);
+                let response = await fetch(`https://api.hypewize.com/v1/projects/${scriptTag.id}`);
 
                 // Check if the request was successful
                 if (!response.ok) {
@@ -201,7 +230,14 @@
                 let themeColor = data.themeColor;
 
                 // Set the background color of the context
-                document.body.style.backgroundColor = themeColor;
+                // document.body.style.backgroundColor = themeColor;
+                // chatButton.style.backgroundColor = themeColor;
+                // chatButtonIcon.style.backgroundColor = themeColor;
+
+
+
+                updateChatButtonOpenColor(themeColor);
+                updateChatButtonCloseColor(themeColor);
 
                 const isLeftSide = false;
                 if (isLeftSide) {
