@@ -75,6 +75,32 @@
     // Add the notification bubble to the chat button
     chatButton.appendChild(notificationBubble)
 
+
+    // This function will be used to toggle fullscreen mode
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            chat.requestFullscreen().catch(err => {
+                alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+            });
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) { /* Firefox */
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { /* IE/Edge */
+                document.msExitFullscreen();
+            }
+        }
+    }
+
+    // This function checks if the device is mobile
+    function isMobileDevice() {
+        return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+    }
+
+
     // toggle the chat component when the chat button is clicked
     let firstClick = true
     chatButton.addEventListener('click', () => {
@@ -88,11 +114,29 @@
         if (chat.style.display === 'none') {
             chat.style.display = 'flex'
             chatButtonIcon.innerHTML = chatButtonClose
+            // If on a mobile device, attempt to go fullscreen when the chat is opened
+            if (isMobileDevice()) {
+                toggleFullscreen();
+            }
         } else {
             chat.style.display = 'none'
             chatButtonIcon.innerHTML = chatButtonLogo
+
+            // If exiting chat on mobile, exit fullscreen mode
+            if (isMobileDevice() && document.fullscreenElement) {
+                toggleFullscreen();
+            }
         }
     })
+
+    // Listen for messages from the iframe
+    window.addEventListener('message', (event) => {
+        if (event.data && event.data.action === 'closeButtonClicked') {
+            toggleFullscreen();
+            chat.style.display = 'none'
+            chatButtonIcon.innerHTML = chatButtonLogo
+        }
+    });
 
     function adjustForSmallScreens() {
         let smallScreenHeight = 600;
