@@ -76,13 +76,32 @@
     chatButton.appendChild(notificationBubble)
 
 
-    // This function will be used to toggle fullscreen mode
-    function toggleFullscreen() {
-        if (!document.fullscreenElement) {
-            chat.requestFullscreen().catch(err => {
-                alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-            });
-        } else {
+    // This function checks if the device is mobile
+    function isMobileDevice() {
+        const widthThreshold = 500; // Maximum width for small devices
+        const viewportWidth = window.innerWidth;
+        return viewportWidth <= widthThreshold;
+    }
+
+
+    const openChat = () => {
+        chat.style.display = 'flex'
+        chatButtonIcon.innerHTML = chatButtonClose
+        // If on a mobile device, attempt to go fullscreen when the chat is opened
+        if (isMobileDevice()) {
+
+            //request full screen, if its a mobile device
+            if (!document.fullscreenElement) {
+                chat.requestFullscreen().catch(err => {
+                    alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                });
+            }
+        }
+    }
+    const closeChat = () => {
+        chat.style.display = 'none'
+        chatButtonIcon.innerHTML = chatButtonLogo
+        if (isMobileDevice()) {
             if (document.exitFullscreen) {
                 document.exitFullscreen();
             } else if (document.mozCancelFullScreen) { /* Firefox */
@@ -95,12 +114,6 @@
         }
     }
 
-    // This function checks if the device is mobile
-    function isMobileDevice() {
-        return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
-    }
-
-
     // toggle the chat component when the chat button is clicked
     let firstClick = true
     chatButton.addEventListener('click', () => {
@@ -112,29 +125,16 @@
 
         // Toggle the chat component
         if (chat.style.display === 'none') {
-            chat.style.display = 'flex'
-            chatButtonIcon.innerHTML = chatButtonClose
-            // If on a mobile device, attempt to go fullscreen when the chat is opened
-            if (isMobileDevice()) {
-                toggleFullscreen();
-            }
+            openChat();
         } else {
-            chat.style.display = 'none'
-            chatButtonIcon.innerHTML = chatButtonLogo
-
-            // If exiting chat on mobile, exit fullscreen mode
-            if (isMobileDevice() && document.fullscreenElement) {
-                toggleFullscreen();
-            }
+            closeChat();
         }
     })
 
     // Listen for messages from the iframe
     window.addEventListener('message', (event) => {
         if (event.data && event.data.action === 'closeButtonClicked') {
-            toggleFullscreen();
-            chat.style.display = 'none'
-            chatButtonIcon.innerHTML = chatButtonLogo
+            closeChat();
         }
     });
 
@@ -184,31 +184,42 @@
 
         document.body.appendChild(chat)
         let getColor = async () => {
-            /*
-            // let response = await fetch(urlBase + "getInit", {
-            //     headers: headers,
-            //     method: "POST",
-            //     body: JSON.stringify({ "name": botName, "uuid": botID }),
-            // });
-            // let string = await response.json();
-            // let arr = string === "" ? [] : string;
-            // let isLeftSide = (arr[3]);
-            // */
-            // chatButton.style.backgroundColor = 'white';
-            const isLeftSide = false;
-            if (isLeftSide) {
-                chatButton.style.left = '20px';
-                chatButton.style.right = 'unset'
-                chat.style.left = '20px';
-                chat.style.right = 'unset'
-            } else {
-                chatButton.style.right = '20px'
-                chatButton.style.left = 'unset'
-                chat.style.right = '20px'
-                chat.style.left = 'unset'
+            try {
+                // Make a GET request to the specified URL
+                let response = await fetch(`https://api.hypewize.com/projects/${scriptTag.id}`);
+
+                // Check if the request was successful
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                console.log('response: ', response)
+                // Parse the JSON response
+                let data = await response.json();
+
+                // Retrieve the themeColor from the response
+                let themeColor = data.themeColor;
+
+                // Set the background color of the context
+                document.body.style.backgroundColor = themeColor;
+
+                const isLeftSide = false;
+                if (isLeftSide) {
+                    chatButton.style.left = '20px';
+                    chatButton.style.right = 'unset'
+                    chat.style.left = '20px';
+                    chat.style.right = 'unset'
+                } else {
+                    chatButton.style.right = '20px'
+                    chatButton.style.left = 'unset'
+                    chat.style.right = '20px'
+                    chat.style.left = 'unset'
+                }
+                document.body.appendChild(chatButton);
+            } catch (error) {
+                console.error('An error occurred:', error);
             }
-            document.body.appendChild(chatButton)
-        }
+        };
 
         getColor()
     }
